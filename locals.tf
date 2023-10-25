@@ -1,4 +1,6 @@
 locals {
+  secrets     = sensitive(yamldecode(file("${path.module}/secrets.yml")))
+
   name          = format("%s-%s", local.project, local.environment)
   environment   = terraform.workspace
   project       = "invenio"
@@ -19,8 +21,6 @@ locals {
   web-ui_domain = format("web-%s.%s", local.project, var.vpc.dns_zone)
   frontend_domain = format("frontend-%s.%s", local.project, var.vpc.dns_zone)
   minio_domain = format("minio-%s.%s", local.project, var.vpc.dns_zone)
-
-  secrets     = sensitive(yamldecode(file("${path.module}/secrets.yml")))
 
   validations = {
   for option in aws_acm_certificate.acm_certificate.domain_validation_options :

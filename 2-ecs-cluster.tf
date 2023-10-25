@@ -15,14 +15,6 @@ module "ecs_cluster" {
   ]
 }
 
-#resource "aws_ecs_cluster" "ecs_cluster" {
-#  name = format("%s-cluster", local.name)
-#
-#  tags = {
-#    Name      = "ECS cluster"
-#    ManagedBy = "terraform"
-#  }
-#}
 
 resource "aws_security_group" "ecs" {
   name        = format("ecs-%s", local.name)

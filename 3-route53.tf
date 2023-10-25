@@ -1,14 +1,3 @@
-#resource "aws_route53_zone" "this" {                     # uncomment this resource if you don't have DNS zone
-#  name  = var.vpc.dns_zone
-#
-#  lifecycle {
-#    ignore_changes = [
-#      tags
-#    ]
-#    prevent_destroy = false
-#  }
-#}
-
 data "aws_route53_zone" "this" {
   name         = var.vpc.dns_zone
   private_zone = false

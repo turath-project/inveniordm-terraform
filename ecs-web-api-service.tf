@@ -50,8 +50,8 @@ resource "aws_ecs_task_definition" "web-api" {
   requires_compatibilities = ["FARGATE"]
   network_mode             = "awsvpc"
 
-  cpu    = 2048
-  memory = 4096
+  cpu    = 1024
+  memory = 2048
 
   task_role_arn      = aws_iam_role.web-api.arn
   execution_role_arn = aws_iam_role.web-api.arn
@@ -100,34 +100,37 @@ resource "aws_ecs_task_definition" "web-api" {
 resource "aws_lb_target_group" "web-api" {
   vpc_id = module.vpc.vpc_id
   name   = format("%s-web-api", local.name)
-
   target_type = "ip"
   port        = 5000
   protocol    = "HTTP"
-
   deregistration_delay = "0"
 
-}
-
-resource "aws_lb_listener_rule" "web-api" {
-  listener_arn = aws_lb_listener.https.arn
-
-  action {
-    type             = "forward"
-    target_group_arn = aws_lb_target_group.web-api.arn
-  }
-
-  condition {
-    host_header {
-      values = [local.web-api_domain]
-    }
+  health_check {
+    path     = "/"
+    interval = 10
+    matcher  = "200-499"
   }
 }
+
+#resource "aws_lb_listener_rule" "web-api" {
+#  listener_arn = aws_lb_listener.https.arn
+#
+#  action {
+#    type             = "forward"
+#    target_group_arn = aws_lb_target_group.web-api.arn
+#  }
+#
+#  condition {
+#    host_header {
+#      values = [local.web-api_domain]
+#    }
+#  }
+#}
 
 resource "aws_ecs_service" "web-api" {
-  depends_on = [
-    aws_lb_listener_rule.web-api
-  ]
+#  depends_on = [
+#    aws_lb_listener_rule.web-api
+#  ]
 
   name = "web-api"
 

@@ -17,9 +17,11 @@ resource "aws_security_group" "es" {
 #    cidr_blocks       = ["0.0.0.0/0"]
 #  }
 }
+
 resource "aws_iam_service_linked_role" "es" {
   aws_service_name = "es.amazonaws.com"
 }
+
 resource "aws_elasticsearch_domain" "es" {
   domain_name = local.elk_domain
   elasticsearch_version = var.elk.es_version
@@ -77,6 +79,7 @@ resource "aws_elasticsearch_domain" "es" {
 output "elk_endpoint" {
   value = aws_elasticsearch_domain.es.endpoint
 }
+
 output "elk_kibana_endpoint" {
   value = aws_elasticsearch_domain.es.kibana_endpoint
 }

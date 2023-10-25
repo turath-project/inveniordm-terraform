@@ -43,6 +43,10 @@ variable "mq" {
   type = map(string)
 }
 
+variable "minio" {
+  type = map(string)
+}
+
 #variable "certificate_sans" {                           # Add domains for whitch you need ssl certificate
 #  default     = [
 #    "frontend-invenio.devlits.com",

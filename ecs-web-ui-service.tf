@@ -92,13 +92,16 @@ resource "aws_ecs_task_definition" "web-ui" {
 resource "aws_lb_target_group" "web-ui" {
   vpc_id = module.vpc.vpc_id
   name   = format("%s-web-ui", local.name)
-
   target_type = "ip"
   port        = 5000
   protocol    = "HTTP"
-
   deregistration_delay = "0"
 
+  health_check {
+    path     = "/"
+    interval = 10
+    matcher  = "200-499"
+  }
 }
 
 resource "aws_lb_listener_rule" "web-ui" {
