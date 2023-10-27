@@ -83,9 +83,3 @@ output "elk_endpoint" {
 output "elk_kibana_endpoint" {
   value = aws_elasticsearch_domain.es.kibana_endpoint
 }
-
-#____________________________________________________________
-#data "aws_iam_role" "service_linked_role" {
-#  name = "AWSServiceRoleForAmazonElasticsearchService"
-#}
-#
