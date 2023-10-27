@@ -23,7 +23,8 @@ resource "aws_acm_certificate" "acm_certificate" {
     var.acm_sans.certificate_san1,
     var.acm_sans.certificate_san2,
     var.acm_sans.certificate_san3,
-    var.acm_sans.certificate_san4
+    var.acm_sans.certificate_san4,
+    var.acm_sans.certificate_san5
   ]
   validation_method           = "DNS"
 

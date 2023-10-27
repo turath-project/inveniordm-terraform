@@ -6,8 +6,8 @@ resource "aws_mq_broker" "rabbit-mq" {
   engine_version             = var.mq.engine_ver
   host_instance_type         = var.mq.instance_type
   publicly_accessible        = var.mq.pub_accessible
-  security_groups            = [aws_security_group.rabbitmq_sg_nodes.id]
-  subnet_ids                 = module.vpc.private_subnets
+#  security_groups            = [aws_security_group.rabbitmq_sg_nodes.id]
+#  subnet_ids                 = module.vpc.private_subnets
   tags                       = {}
 
   #  encryption_options {

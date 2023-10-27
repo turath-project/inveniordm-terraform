@@ -8,7 +8,8 @@ resource "aws_route53_record" "cert_validation" {
     var.acm_sans.certificate_san1,
     var.acm_sans.certificate_san2,
     var.acm_sans.certificate_san3,
-    var.acm_sans.certificate_san4
+    var.acm_sans.certificate_san4,
+    var.acm_sans.certificate_san5
     ]
    )
   )
@@ -28,7 +29,8 @@ resource "aws_route53_record" "invenio_A-record" {
     local.web-api_domain,
     local.web-ui_domain,
     local.frontend_domain,
-    local.minio_domain
+    local.minio_domain,
+    local.pgadmin_domain
   ])
   depends_on = [data.aws_route53_zone.this, aws_lb.this]
 

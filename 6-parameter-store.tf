@@ -27,10 +27,10 @@ resource "aws_ssm_parameter" "backend" {
 }
 
 
-resource "aws_kms_key" "frontend" {
-  description             = format("%s-frontend", local.name)
-  deletion_window_in_days = 7
-}
+#resource "aws_kms_key" "frontend" {
+#  description             = format("%s-frontend", local.name)
+#  deletion_window_in_days = 7
+#}
 
 #resource "aws_ssm_parameter" "frontend" {
 #  for_each = merge(nonsensitive(local.secrets["frontend"]),
@@ -75,6 +75,30 @@ resource "aws_ssm_parameter" "minio" {
   type      = "SecureString"
   tier      = "Standard"
   key_id    = aws_kms_key.minio.id
+  value     = each.value
+  overwrite = true
+}
+
+
+resource "aws_kms_key" "pgadmin" {
+  description             = format("%s-pgadmin", local.name)
+  deletion_window_in_days = 7
+}
+
+resource "aws_ssm_parameter" "pgadmin" {
+  for_each = merge(nonsensitive(local.secrets["pgadmin"]),
+    {
+      PGADMIN_DEFAULT_PASSWORD = var.pgadmin.root_pass               # There you can add non sensitive data
+      PGADMIN_DEFAULT_EMAIL = var.pgadmin.admin_email                # Or sensitive with links from *.tfvars.json
+    }
+  )
+
+  name        = format("/%s-pgadmin/%s/%s", local.project, local.environment, each.key)
+  description = "N/A"
+
+  type      = "SecureString"
+  tier      = "Standard"
+  key_id    = aws_kms_key.pgadmin.id
   value     = each.value
   overwrite = true
 }

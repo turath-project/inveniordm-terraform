@@ -104,25 +104,25 @@ resource "aws_lb_target_group" "celery" {
   }
 }
 
-resource "aws_lb_listener_rule" "celery" {
-  listener_arn = aws_lb_listener.https.arn
-
-  action {
-    type             = "forward"
-    target_group_arn = aws_lb_target_group.celery.arn
-  }
-
-  condition {
-    host_header {
-      values = [local.web-api_domain]
-    }
-  }
-}
+#resource "aws_lb_listener_rule" "celery" {
+#  listener_arn = aws_lb_listener.https.arn
+#
+#  action {
+#    type             = "forward"
+#    target_group_arn = aws_lb_target_group.celery.arn
+#  }
+#
+#  condition {
+#    host_header {
+#      values = [local.web-api_domain]
+#    }
+#  }
+#}
 
 resource "aws_ecs_service" "celery" {
-  depends_on = [
-    aws_lb_listener_rule.celery
-  ]
+#  depends_on = [
+#    aws_lb_listener_rule.celery
+#  ]
 
   name = "celery"
 

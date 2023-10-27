@@ -47,12 +47,6 @@ variable "minio" {
   type = map(string)
 }
 
-#variable "certificate_sans" {                           # Add domains for whitch you need ssl certificate
-#  default     = [
-#    "frontend-invenio.devlits.com",
-#    "web-invenio.devlits.com",
-#    "api-invenio.devlits.com"
-#  ]
-#  type = list(string)
-#  description = "List of subject alternative names"
-#}
+variable "pgadmin" {
+  type = map(string)
+}

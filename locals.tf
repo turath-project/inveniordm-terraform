@@ -21,6 +21,7 @@ locals {
   web-ui_domain = format("web-%s.%s", local.project, var.vpc.dns_zone)
   frontend_domain = format("frontend-%s.%s", local.project, var.vpc.dns_zone)
   minio_domain = format("minio-%s.%s", local.project, var.vpc.dns_zone)
+  pgadmin_domain = format("pgadmin-%s.%s", local.project, var.vpc.dns_zone)
 
   validations = {
   for option in aws_acm_certificate.acm_certificate.domain_validation_options :
