@@ -11,7 +11,7 @@
 - creating S3 bucket for terraform backend. Terraform will keep the tfstate file in specified S3 bucket
 - follow "# manual add value" comments in 0-main.tf file
 - All configs ruled by "secrets.enc.yml" and "terraform.enc.tfvars.json" files
-- create KMS key for further encrypt/decrypt the files with sensitive data. Used in connection with `sops` by export SOPS_KMS_ARN=arn:aws:kms:*
+- create KMS key for further encrypt/decrypt the files with sensitive data. Used in connection with `sops` by export SOPS_KMS_ARN=arn:aws:kms:*****
 
 ## Services Used
 
@@ -22,6 +22,7 @@
 * [ECS Service](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/ecs_services.html): run and maintain a specified number of instances of a task definition
 * [RDS](https://aws.amazon.com/rds/): Amazon Relational Database Service
 * [Fargate](https://aws.amazon.com/fargate/): serverless compute platform/engine
+* [CloudFront](https://aws.amazon.com/cloudfront/): Amazon CloudFront is a content delivery network (CDN) service built for high performance, security, and developer convenience.
 * [KMS - Key Management Service](https://aws.amazon.com/kms/): managed service handling encryption
 * [NAT Gateway](https://docs.aws.amazon.com/vpc/latest/userguide/vpc-nat-gateway.html): network address translation service
 * [Parameter Store](https://docs.aws.amazon.com/systems-manager/latest/userguide/systems-manager-parameter-store.html): secure, hierarchical storage for secrets management
@@ -56,10 +57,24 @@ terraform init
 terraform validate
 terraform plan/apply
 ```
+### App code changes and preparation for deploying to ECS
+- after we initialize and generates project structure (_https://inveniordm.docs.cern.ch/install/scaffold/_) we need to change this lines:
+  `socket=0.0.0.0:5000` to `http=0.0.0.0:5000`
+  in 2 files: docker/uwsgi/uwsgi_rest.ini and docker/uwsgi/uwsgi_ui.ini
+- start project locally in docker and cp `/opt/invenio/var/instance/static` folder from docker container with api to S3:
+  for that run script: `upload_to_s3.sh`
+- all this actions can be applied only after s3 bucket creation with `terraform apply` command
 
 ## Environment variables
-To update env. variable do next:
-- execute `sops terraform.enc.tfvars.json` or `sops secrets.enc.yml`, make changes and save file.
+To update environment variables do next:
+- execute `sops terraform.enc.tfvars.json` or `sops secrets.enc.yml`, make changes and save file
 - apply changes `terraform plan/apply`
-- in order to apply the env. variable(s) changes on the ECS service side either in AWS ECS, manually force new deployment for specified service.
+- in order to apply the environment variable(s) changes on the ECS service side either in AWS ECS, manually force new deployment for specified service
+
+## Additional notes:
+Note !!! You need build, tag and push your images into ECR manually:
+Example:
+- docker tag invenio:latest <aws_account_id>.dkr.ecr.eu-north-1.amazonaws.com/invenio-default-api:latest
+[Follow this guide](https://docs.aws.amazon.com/AmazonECR/latest/userguide/docker-push-ecr-image.html)
+- without CI-CD functionality you need to push images every time the app code changes
 
