@@ -17,7 +17,7 @@
 
 * [ALB - Application Load Balancer](https://aws.amazon.com/elasticloadbalancing/application-load-balancer/): internal connection endpoint to the application
 * [AWS Certificate Manager](https://aws.amazon.com/certificate-manager/): provision, manage, and deploy public and private SSL/TLS certificates
-* [ECR - Elastic Container Registry](https://aws.amazon.com/ecr/): private Docker registry to hold our application images (uploaded from Circle CI)
+* [ECR - Elastic Container Registry](https://aws.amazon.com/ecr/): private image registry
 * [ECS - Elastic Container Service](https://aws.amazon.com/ecs/): container orchestration
 * [ECS Service](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/ecs_services.html): run and maintain a specified number of instances of a task definition
 * [RDS](https://aws.amazon.com/rds/): Amazon Relational Database Service
