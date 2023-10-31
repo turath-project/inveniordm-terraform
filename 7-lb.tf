@@ -74,7 +74,8 @@ resource "aws_lb_listener" "https" {
 
   port            = 443
   protocol        = "HTTPS"
-  certificate_arn   = aws_acm_certificate_validation.acm_certificate_validation.certificate_arn
+  # certificate_arn   = aws_acm_certificate_validation.acm_certificate_validation.certificate_arn
+  certificate_arn   = module.acm_certificate.acm_certificate_arn
   ssl_policy      = "ELBSecurityPolicy-TLS13-1-2-2021-06"
 
   default_action {

@@ -147,11 +147,11 @@ resource "aws_ecs_service" "celery" {
     security_groups = [aws_security_group.ecs.id]
   }
 
-  load_balancer {
-    target_group_arn = aws_lb_target_group.celery.arn
-    container_name   = "app"
-    container_port   = aws_lb_target_group.celery.port
-  }
+#  load_balancer {
+#    target_group_arn = aws_lb_target_group.celery.arn
+#    container_name   = "app"
+#    container_port   = aws_lb_target_group.celery.port
+#  }
 
   lifecycle {
     ignore_changes = [

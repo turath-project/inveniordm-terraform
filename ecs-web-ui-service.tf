@@ -63,9 +63,13 @@ resource "aws_ecs_task_definition" "web-ui" {
 
       essential = true
 
-      command   = [
-        "uwsgi", "/opt/invenio/var/instance/uwsgi_ui.ini"
-      ]
+      entryPoint: [
+          "sh",
+          "-c"
+      ],
+      command: [
+          "/bin/sh -c \"uwsgi /opt/invenio/var/instance/uwsgi_ui.ini\""
+      ],
 
       portMappings = [
         {
@@ -106,16 +110,16 @@ resource "aws_lb_target_group" "web-ui" {
 
 resource "aws_lb_listener_rule" "web-ui" {
   listener_arn = aws_lb_listener.https.arn
-
+  priority     = 5
   action {
     type             = "forward"
     target_group_arn = aws_lb_target_group.web-ui.arn
   }
 
   condition {
-    host_header {
-      values = [local.web-ui_domain]
-    }
+   path_pattern {
+     values = ["/*"]
+   }
   }
 }
 

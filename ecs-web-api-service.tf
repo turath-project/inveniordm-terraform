@@ -59,7 +59,7 @@ resource "aws_ecs_task_definition" "web-api" {
   container_definitions = jsonencode([
     {
       name  = "app"
-      image = format("%s:latest", aws_ecr_repository.web-api.repository_url)
+      image = format("%s:latest", aws_ecr_repository.web-ui.repository_url)
 
       essential = true
 
@@ -67,9 +67,13 @@ resource "aws_ecs_task_definition" "web-api" {
 
       ]
 
-      command   = [
-        "uwsgi", "/opt/invenio/var/instance/uwsgi_rest.ini"
-      ]
+      entryPoint: [
+          "sh",
+          "-c"
+      ],
+      command: [
+          "/bin/sh -c \"uwsgi /opt/invenio/var/instance/uwsgi_rest.ini && invenio db init create && invenio roles create admin && invenio access allow superuser-access role admin && invenio index init\""
+      ],
 
 #      command   = [
 #        "sleep", "infinity"
@@ -112,20 +116,21 @@ resource "aws_lb_target_group" "web-api" {
   }
 }
 
-#resource "aws_lb_listener_rule" "web-api" {
-#  listener_arn = aws_lb_listener.https.arn
-#
-#  action {
-#    type             = "forward"
-#    target_group_arn = aws_lb_target_group.web-api.arn
-#  }
-#
-#  condition {
-#    host_header {
-#      values = [local.web-api_domain]
-#    }
-#  }
-#}
+resource "aws_lb_listener_rule" "web-api" {
+ listener_arn = aws_lb_listener.https.arn
+ priority     = 4
+
+ action {
+   type             = "forward"
+   target_group_arn = aws_lb_target_group.web-api.arn
+ }
+
+ condition {
+   path_pattern {
+     values = ["/api/*"]
+   }
+ }
+}
 
 resource "aws_ecs_service" "web-api" {
 #  depends_on = [

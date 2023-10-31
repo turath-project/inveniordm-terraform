@@ -9,9 +9,9 @@
 ### Manual init steps for terraform preparation (one time only)
 - creat IAM user with `AdministratorAccess` AWS managed permission policy
 - creating S3 bucket for terraform backend. Terraform will keep the tfstate file in specified S3 bucket
-- follow "# manual add value" comments in 0-main.tf file
-- All configs ruled by "secrets.enc.yml" and "terraform.enc.tfvars.json" files
-- create KMS key for further encrypt/decrypt the files with sensitive data. Used in connection with `sops` by export SOPS_KMS_ARN=arn:aws:kms:*****
+- follow `# manual add value` comments in `0-main.tf` file
+- All configs ruled by `secrets.enc.yml` and `terraform.enc.tfvars.json` files
+- create KMS key for further encrypt/decrypt the files with sensitive data. Used in connection with `sops` by export `SOPS_KMS_ARN=arn:aws:kms:*****`
 
 ## Services Used
 
@@ -60,10 +60,12 @@ terraform plan/apply
 ### App code changes and preparation for deploying to ECS
 - after we initialize and generates project structure (_https://inveniordm.docs.cern.ch/install/scaffold/_) we need to change this lines:
   `socket=0.0.0.0:5000` to `http=0.0.0.0:5000`
-  in 2 files: docker/uwsgi/uwsgi_rest.ini and docker/uwsgi/uwsgi_ui.ini
+  in 2 files: `docker/uwsgi/uwsgi_rest.ini` and `docker/uwsgi/uwsgi_ui.ini`
 - start project locally in docker and cp `/opt/invenio/var/instance/static` folder from docker container with api to S3:
-  for that run script: `upload_to_s3.sh`
+  for that run script: `upload_to_s3.sh`. Or if you init project without docker with "Select file_storage: local" option you need to copy static files into S3 bucket manually
 - all this actions can be applied only after s3 bucket creation with `terraform apply` command
+- apply terraform and wait till mq, elk, rds and other services will deployed with creating their endpoints and add it into `secrets.yml` and `terraform.tfvars`
+- after preparing all env variables for app - apply terraform again. This will redeploy ECS services with added env variables
 
 ## Environment variables
 To update environment variables do next:
@@ -72,9 +74,9 @@ To update environment variables do next:
 - in order to apply the environment variable(s) changes on the ECS service side either in AWS ECS, manually force new deployment for specified service
 
 ## Additional notes:
-Note !!! You need build, tag and push your images into ECR manually:
+Note !!! You need to build, tag and push your images into ECR manually:
 Example:
-- docker tag invenio:latest <aws_account_id>.dkr.ecr.eu-north-1.amazonaws.com/invenio-default-api:latest
+- `docker tag invenio:latest <aws_account_id>.dkr.ecr.eu-north-1.amazonaws.com/invenio-default-api:latest`
 [Follow this guide](https://docs.aws.amazon.com/AmazonECR/latest/userguide/docker-push-ecr-image.html)
 - without CI-CD functionality you need to push images every time the app code changes
 

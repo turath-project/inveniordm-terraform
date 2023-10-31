@@ -112,6 +112,7 @@ resource "aws_lb_target_group" "minio" {
 
 resource "aws_lb_listener_rule" "minio" {
   listener_arn = aws_lb_listener.https.arn
+  priority     = 1
 
   action {
     type             = "forward"
