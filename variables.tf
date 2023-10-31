@@ -31,6 +31,10 @@ variable "rds" {
   type  = map(string)
 }
 
+variable "s3" {
+  type  = map(string)
+}
+
 variable "redis" {
   type  = map(string)
 }

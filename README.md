@@ -65,6 +65,10 @@ terraform plan/apply
   for that run script: `upload_to_s3.sh`. Or if you init project without docker with "Select file_storage: local" option you need to copy static files into S3 bucket manually
 - all this actions can be applied only after s3 bucket creation with `terraform apply` command
 - apply terraform and wait till mq, elk, rds and other services will deployed with creating their endpoints and add it into `secrets.yml` and `terraform.tfvars`
+- change in `invenio.cfg` file lines with "`# TODO:`" tag with your needed values. For example:
+  `APP_ALLOWED_HOSTS` to `None` value - `APP_ALLOWED_HOSTS = None`
+  Without this changes, app will not working. This hardcoded values need to be changed by developers
+- We prepare logic to centralize app environments with parameter store, but at this moment it depends on `invenio.cfg` file setup
 - after preparing all env variables for app - apply terraform again. This will redeploy ECS services with added env variables
 
 ## Environment variables

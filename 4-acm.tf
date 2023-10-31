@@ -28,24 +28,3 @@ module "acm_certificate_cloudfront" {
 
   validation_method = "DNS"
 }
-# resource "aws_acm_certificate" "acm_certificate" {
-#   domain_name                 = var.acm.cert_domain
-# #  subject_alternative_names   = var.certificate_sans
-#   subject_alternative_names = [
-#     var.acm_sans.certificate_invenio,
-#     var.acm_sans.certificate_san2,
-#     var.acm_sans.certificate_san3,
-#     var.acm_sans.certificate_san4,
-#     var.acm_sans.certificate_san5
-#   ]
-#   validation_method           = "DNS"
-
-#   lifecycle {
-#     create_before_destroy = true
-#   }
-# }
-
-# resource "aws_acm_certificate_validation" "acm_certificate_validation" {
-#   certificate_arn         = aws_acm_certificate.acm_certificate.arn
-#   validation_record_fqdns = aws_acm_certificate.acm_certificate.domain_validation_options[*].resource_record_name
-# }

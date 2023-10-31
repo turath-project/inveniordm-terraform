@@ -35,15 +35,6 @@ resource "aws_cloudwatch_log_group" "pgadmin" {
   retention_in_days = "7"
 }
 
-#resource "aws_ecr_repository" "pgadmin" {
-#  name                 = format("%s-pgadmin", local.name)
-#  image_tag_mutability = "MUTABLE"
-#
-#  image_scanning_configuration {
-#    scan_on_push = false
-#  }
-#}
-
 resource "aws_ecs_task_definition" "pgadmin" {
   family = format("%s-pgadmin", local.name)
 

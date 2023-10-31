@@ -35,8 +35,8 @@ resource "aws_cloudwatch_log_group" "web-api" {
   retention_in_days = "7"
 }
 
-resource "aws_ecr_repository" "web-api" {
-  name                 = format("%s-web-api", local.name)
+resource "aws_ecr_repository" "invenio-ecr" {                  # this ECR used for web-ui, web-api and celery services
+  name                 = format("%s-app", local.name)
   image_tag_mutability = "MUTABLE"
 
   image_scanning_configuration {
@@ -59,7 +59,7 @@ resource "aws_ecs_task_definition" "web-api" {
   container_definitions = jsonencode([
     {
       name  = "app"
-      image = format("%s:latest", aws_ecr_repository.web-ui.repository_url)
+      image = format("%s:latest", aws_ecr_repository.invenio-ecr.repository_url)
 
       essential = true
 
@@ -72,7 +72,7 @@ resource "aws_ecs_task_definition" "web-api" {
           "-c"
       ],
       command: [
-          "/bin/sh -c \"uwsgi /opt/invenio/var/instance/uwsgi_rest.ini && invenio db init create && invenio roles create admin && invenio access allow superuser-access role admin && invenio index init\""
+          "/bin/sh -c \"invenio db init create && invenio roles create admin && invenio access allow superuser-access role admin && invenio index init && invenio rdm-records demo && invenio rdm-records fixtures && uwsgi /opt/invenio/var/instance/uwsgi_rest.ini\""
       ],
 
 #      command   = [
@@ -178,7 +178,6 @@ resource "aws_appautoscaling_target" "web-api" {
   min_capacity       = 1
   max_capacity       = local.is_production ? 5 : 2
   resource_id        = format("service/%s/%s", module.ecs_cluster.ecs_cluster_name, aws_ecs_service.web-api.name)
-#  resource_id        = format("service/%s/%s", aws_ecs_cluster.ecs_cluster.name, aws_ecs_service.backend.name)
   scalable_dimension = "ecs:service:DesiredCount"
   service_namespace  = "ecs"
 }

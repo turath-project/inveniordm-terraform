@@ -35,14 +35,14 @@ resource "aws_cloudwatch_log_group" "celery" {
   retention_in_days = "7"
 }
 
-resource "aws_ecr_repository" "celery" {
-  name                 = format("%s-celery", local.name)
-  image_tag_mutability = "MUTABLE"
-
-  image_scanning_configuration {
-    scan_on_push = false
-  }
-}
+#resource "aws_ecr_repository" "celery" {
+#  name                 = format("%s-celery", local.name)
+#  image_tag_mutability = "MUTABLE"
+#
+#  image_scanning_configuration {
+#    scan_on_push = false
+#  }
+#}
 
 resource "aws_ecs_task_definition" "celery" {
   family = format("%s-celery", local.name)
@@ -59,13 +59,17 @@ resource "aws_ecs_task_definition" "celery" {
   container_definitions = jsonencode([
     {
       name  = "app"
-      image = format("%s:latest", aws_ecr_repository.celery.repository_url)
+      image = format("%s:latest", aws_ecr_repository.invenio-ecr.repository_url)
 
       essential = true
 
-      command   = [
-        "celery", "-A", "invenio_app.celery", "worker", "--loglevel=INFO"
-      ]
+      entryPoint: [
+        "sh",
+        "-c"
+      ],
+      command: [
+        "/bin/sh -c \"celery -A invenio_app.celery worker --loglevel=INFO\""
+      ],
 
       portMappings = [
         {
@@ -89,40 +93,7 @@ resource "aws_ecs_task_definition" "celery" {
   ])
 }
 
-resource "aws_lb_target_group" "celery" {
-  vpc_id = module.vpc.vpc_id
-  name   = format("%s-celery", local.name)
-  target_type = "ip"
-  port        = 5000
-  protocol    = "HTTP"
-  deregistration_delay = "0"
-
-  health_check {
-    path     = "/"
-    interval = 10
-    matcher  = "200-499"
-  }
-}
-
-#resource "aws_lb_listener_rule" "celery" {
-#  listener_arn = aws_lb_listener.https.arn
-#
-#  action {
-#    type             = "forward"
-#    target_group_arn = aws_lb_target_group.celery.arn
-#  }
-#
-#  condition {
-#    host_header {
-#      values = [local.web-api_domain]
-#    }
-#  }
-#}
-
 resource "aws_ecs_service" "celery" {
-#  depends_on = [
-#    aws_lb_listener_rule.celery
-#  ]
 
   name = "celery"
 
@@ -147,12 +118,6 @@ resource "aws_ecs_service" "celery" {
     security_groups = [aws_security_group.ecs.id]
   }
 
-#  load_balancer {
-#    target_group_arn = aws_lb_target_group.celery.arn
-#    container_name   = "app"
-#    container_port   = aws_lb_target_group.celery.port
-#  }
-
   lifecycle {
     ignore_changes = [
       task_definition,
@@ -165,7 +130,6 @@ resource "aws_appautoscaling_target" "celery" {
   min_capacity       = 1
   max_capacity       = local.is_production ? 5 : 2
   resource_id        = format("service/%s/%s", module.ecs_cluster.ecs_cluster_name, aws_ecs_service.celery.name)
-  #  resource_id        = format("service/%s/%s", aws_ecs_cluster.ecs_cluster.name, aws_ecs_service.backend.name)
   scalable_dimension = "ecs:service:DesiredCount"
   service_namespace  = "ecs"
 }

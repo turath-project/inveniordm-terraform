@@ -35,15 +35,6 @@ resource "aws_cloudwatch_log_group" "minio" {
   retention_in_days = "7"
 }
 
-resource "aws_ecr_repository" "minio" {
-  name                 = format("%s-minio", local.name)
-  image_tag_mutability = "MUTABLE"
-
-  image_scanning_configuration {
-    scan_on_push = false
-  }
-}
-
 resource "aws_ecs_task_definition" "minio" {
   family = format("%s-minio", local.name)
 
@@ -59,7 +50,6 @@ resource "aws_ecs_task_definition" "minio" {
   container_definitions = jsonencode([
     {
       name  = "app"
-#      image = format("%s:latest", aws_ecr_repository.minio.repository_url)
       image = "quay.io/minio/minio"
 
       essential = true
@@ -172,7 +162,6 @@ resource "aws_appautoscaling_target" "minio" {
   min_capacity       = 1
   max_capacity       = local.is_production ? 5 : 2
   resource_id        = format("service/%s/%s", module.ecs_cluster.ecs_cluster_name, aws_ecs_service.minio.name)
-  #  resource_id        = format("service/%s/%s", aws_ecs_cluster.ecs_cluster.name, aws_ecs_service.backend.name)
   scalable_dimension = "ecs:service:DesiredCount"
   service_namespace  = "ecs"
 }

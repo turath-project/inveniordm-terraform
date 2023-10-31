@@ -1,7 +1,7 @@
 module "cdn" {
   source = "terraform-aws-modules/cloudfront/aws"
 
-  aliases = ["invenio.devlits.com"]
+  aliases = ["${local.web-ui_domain}"]
 
   comment             = "Invenio"
   enabled             = true
@@ -26,7 +26,7 @@ module "cdn" {
 
   origin = {
     loadbalancer = {
-      domain_name = "alb-invenio.devlits.com"
+      domain_name = local.alb_domain
       custom_origin_config = {
         http_port              = 80
         https_port             = 443
@@ -78,28 +78,12 @@ module "cdn" {
   }
 }
 
-# resource "aws_cloudfront_origin_access_identity" "s3_access" {
-#   comment = "Identity for Cloudfront"
-# }
-
 ##s3-bucket for static
 
 resource "aws_s3_bucket" "static" {
-  bucket = "invenio-static-data"
-
+  bucket = var.s3.static_bucket
 }
 
-# data "aws_iam_policy_document" "s3_policy" {
-#   statement {
-#     actions   = ["s3:GetObject"]
-#     resources = ["arn:aws:s3:::${aws_s3_bucket.static.id}"]
-
-#     principals {
-#       type        = "AWS"
-#       identifiers = [aws_cloudfront_origin_access_identity.s3_access.iam_arn]
-#     }
-#   }
-# }
 data "aws_caller_identity" "current" {}
 
 resource "aws_s3_bucket_policy" "static" {

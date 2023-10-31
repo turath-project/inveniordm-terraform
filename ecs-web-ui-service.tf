@@ -35,15 +35,6 @@ resource "aws_cloudwatch_log_group" "web-ui" {
   retention_in_days = "7"
 }
 
-resource "aws_ecr_repository" "web-ui" {
-  name                 = format("%s-web-ui", local.name)
-  image_tag_mutability = "MUTABLE"
-
-  image_scanning_configuration {
-    scan_on_push = false
-  }
-}
-
 resource "aws_ecs_task_definition" "web-ui" {
   family = format("%s-web-ui", local.name)
 
@@ -59,7 +50,7 @@ resource "aws_ecs_task_definition" "web-ui" {
   container_definitions = jsonencode([
     {
       name  = "app"
-      image = format("%s:latest", aws_ecr_repository.web-ui.repository_url)
+      image = format("%s:latest", aws_ecr_repository.invenio-ecr.repository_url)
 
       essential = true
 

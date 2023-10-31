@@ -10,12 +10,6 @@ resource "aws_security_group" "es" {
       module.vpc.vpc_cidr_block
     ]
   }
-#  egress {
-#    from_port = 0
-#    protocol  = "-1"
-#    to_port   = 0
-#    cidr_blocks       = ["0.0.0.0/0"]
-#  }
 }
 
 resource "aws_iam_service_linked_role" "es" {

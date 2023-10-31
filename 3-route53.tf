@@ -3,25 +3,6 @@ data "aws_route53_zone" "this" {
   private_zone = false
 }
 
-# resource "aws_route53_record" "cert_validation" {
-#   for_each = toset(concat([var.acm.cert_domain], [
-#     var.acm_sans.certificate_invenio,
-#     var.acm_sans.certificate_alb,
-#     var.acm_sans.certificate_minio,
-#     var.acm_sans.certificate_pgadmin
-#     ]
-#    )
-#   )
-#   allow_overwrite = true
-#   zone_id = data.aws_route53_zone.this.zone_id
-#   ttl = 60
-
-#   name    = local.validations[each.key].resource_record_name
-#   type    = local.validations[each.key].resource_record_type
-#   records = [ local.validations[each.key].resource_record_value ]
-
-# }
-
 
 resource "aws_route53_record" "invenio_A-record" {
   for_each = toset([
