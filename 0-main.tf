@@ -1,9 +1,9 @@
 terraform {
   required_version = ">=1.5.2,<2.0.0"
   backend "s3" {
-    bucket          = "terraform-state-invenio-eu-north-1"        # manual add value
-    key             = "terraform.tfstate"                         # manual add value
-    region          = "eu-north-1"                                # manual add value
+    bucket          = "cmesturath-dev-applications"        # manual add value
+    key             = "terraform-inveniordm.tfstate"                         # manual add value
+    region          = "us-east-1"                                # manual add value
     # dynamodb_table  = "terraform-state-invenio-lock"
   }
 }
